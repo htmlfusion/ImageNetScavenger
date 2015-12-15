@@ -1,0 +1,7 @@
+imagenet:
+  build: ./imagenet-service
+  ports:
+   - "5000:5000"
+  volumes:
+   - ./imagenet-service:/imagenet
+
