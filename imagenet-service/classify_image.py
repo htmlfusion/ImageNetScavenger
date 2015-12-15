@@ -35,6 +35,8 @@ import os.path
 import re
 import sys
 import tarfile
+from bottle import route, run, request
+import tempfile
 
 # pylint: disable=unused-import,g-bad-import-order
 import tensorflow.python.platform
@@ -156,9 +158,6 @@ def run_inference_on_image(image):
     tf.logging.fatal('File does not exist %s', image)
   image_data = gfile.FastGFile(image, 'rb').read()
 
-  # Creates graph from saved GraphDef.
-  create_graph()
-
   with tf.Session() as sess:
     # Some useful tensors:
     # 'softmax:0': A tensor containing the normalized prediction across
@@ -177,10 +176,12 @@ def run_inference_on_image(image):
     node_lookup = NodeLookup()
 
     top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
+    top_k_scores = {}
     for node_id in top_k:
       human_string = node_lookup.id_to_string(node_id)
       score = predictions[node_id]
-      print('%s (score = %.5f)' % (human_string, score))
+      top_k_scores[human_string] = float(score)
+    return top_k_scores
 
 
 def maybe_download_and_extract():
@@ -204,11 +205,31 @@ def maybe_download_and_extract():
 
 
 def main(_):
-  maybe_download_and_extract()
   image = (FLAGS.image_file if FLAGS.image_file else
            os.path.join(FLAGS.model_dir, 'cropped_panda.jpg'))
-  run_inference_on_image(image)
 
 
+
+@route('/')
+def home():
+  return 'Alive'
+  
+@route('/upload', method='POST')
+def do_upload():
+  upload     = request.files.get('upload')
+  name, ext = os.path.splitext(upload.filename)
+  if ext not in ('.png','.jpg','.jpeg'):
+      return 'File extension not allowed.'
+  
+  with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as temp_file:
+    upload.save(temp_file.name, overwrite=True) # appends upload.filename automatically
+    try:
+        scores = run_inference_on_image(temp_file.name)
+        return scores
+    except Exception as e:
+        return {"error": str(e)}
+    
 if __name__ == '__main__':
-  tf.app.run()
+  create_graph()
+  run(host='0.0.0.0', port=8080)
+    
