@@ -1,7 +1,7 @@
 imagenet:
   build: ./imagenet-service
   ports:
-   - "5000:8080"
+   - "5000:80"
   volumes:
    - ./imagenet-service:/imagenet
 twitter-bot:
@@ -10,5 +10,5 @@ twitter-bot:
    - ./twitter-bot:/twitter-bot
   env_file: ./twitter-bot/keys.env
   links:
-   - imagenet
+    - imagenet:imagenet
      

@@ -216,6 +216,7 @@ def home():
   
 @route('/upload', method='POST')
 def do_upload():
+  print(request.files.keys())
   upload     = request.files.get('upload')
   name, ext = os.path.splitext(upload.filename)
   if ext not in ('.png','.jpg','.jpeg'):
@@ -231,5 +232,5 @@ def do_upload():
     
 if __name__ == '__main__':
   create_graph()
-  run(host='0.0.0.0', port=8080)
+  run(host='0.0.0.0', port=80)
     
