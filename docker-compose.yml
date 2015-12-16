@@ -1,7 +1,3 @@
-imagenet:
-  build: ./imagenet-service
-  volumes:
-   - ./imagenet-service:/imagenet
 twitter-bot:
   build: ./twitter-bot
   volumes:
@@ -13,4 +9,7 @@ imagenet-proxy:
   image: tutum/haproxy
   links:
     - imagenet
-     
+imagenet:
+  build: ./imagenet-service
+  volumes:
+   - ./imagenet-service:/imagenet
