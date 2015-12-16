@@ -9,4 +9,6 @@ twitter-bot:
   volumes:
    - ./twitter-bot:/twitter-bot
   env_file: ./twitter-bot/keys.env
+  links:
+   - imagenet
      
