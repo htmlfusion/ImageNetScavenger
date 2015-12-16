@@ -10,5 +10,9 @@ twitter-bot:
    - ./twitter-bot:/twitter-bot
   env_file: ./twitter-bot/keys.env
   links:
-    - imagenet:imagenet
+    - imagenet-proxy:imagenet
+imagenet-proxy:
+  image: tutum/haproxy
+  links:
+    - imagenet
      
