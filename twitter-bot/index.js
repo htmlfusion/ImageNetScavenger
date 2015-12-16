@@ -8,9 +8,16 @@ var client = new Twitter({
   access_token_secret: process.env.TWITTER_TOKEN_SECRET
 });
 
-function onImageAnalysis(err, httpResponse, body) {
-  console.log(err);	
-  console.log(body);	
+function onImageAnalysis(err, matches, tweet) {
+	console.log(matches);
+	if (!err) {
+		Object.keys(matches).forEach(function(key){
+			if (body[key] > 0.9) {
+				console.log("You've found " + key);
+				break;
+			}
+		});
+	}
 }
 
 client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stream) {
@@ -24,7 +31,9 @@ client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stre
 			request.post(
 				 'http://imagenet/upload',
 				 {formData: {upload: download}}, 
-				 onImageAnalysis
+				 function(err, httpResponse, body) {
+		         onImageAnalysis(err, body, tweet);
+				 }
   		 );
 		}
 		
