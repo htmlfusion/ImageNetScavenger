@@ -4,3 +4,9 @@ imagenet:
    - "5000:8080"
   volumes:
    - ./imagenet-service:/imagenet
+twitter-bot:
+  build: ./twitter-bot
+  volumes:
+   - ./twitter-bot:/twitter-bot
+  env_file: ./twitter-bot/keys.env
+     
