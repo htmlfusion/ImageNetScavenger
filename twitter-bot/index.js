@@ -10,14 +10,13 @@ var client = new Twitter({
 
 function onImageAnalysis(err, matches, tweet) {
 	console.log(matches);
-	if (!err) {
-		Object.keys(matches).forEach(function(key){
-			if (body[key] > 0.9) {
-				console.log("You've found " + key);
-				break;
-			}
-		});
-	}
+	//if (!err) {
+	//	Object.keys(matches).forEach(function(key){
+	//		if (matches[key] > 0.9) {
+	//			console.log("You've found " + key);
+	//		}
+	//	});
+	//}
 }
 
 client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stream) {
