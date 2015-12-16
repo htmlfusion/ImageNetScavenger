@@ -1,7 +1,5 @@
 imagenet:
   build: ./imagenet-service
-  ports:
-   - "5000:80"
   volumes:
    - ./imagenet-service:/imagenet
 twitter-bot:
