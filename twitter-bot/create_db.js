@@ -8,7 +8,7 @@ fs.readFile('../labels.txt', 'utf8', function (err,data) {
   }
 	var keys = data.split('\n');
 	keys.forEach(function(key){
-		database.save('nouns', {text: key});
+		database.save('nouns', {text: key, found: false});
 	});
 });
 
