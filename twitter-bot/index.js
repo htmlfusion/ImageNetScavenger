@@ -1,9 +1,12 @@
-var Twitter = require('twitter'),
+var _ = require('lodash'),
+ Twitter = require('twitter'),
+ Database = require('somewhere'),
  request = require('request'),
- dbPath = '/var/somewhere/database.json';
-
-var database = new Database(dbPath);
+ collection = 'nouns',
+ database = new Database('/var/somewhere/database.json');
  
+console.log(collection, database.find(collection, {}))
+
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -11,8 +14,11 @@ var client = new Twitter({
   access_token_secret: process.env.TWITTER_TOKEN_SECRET
 });
 
-function tweetFound(user, match) {
-	var message = '🌟🌟🌟 @' + user.screen_name + ' you found a ' + match + ". We're crossing it off the list http://mmmbrain.com";
+function tweetFound(tweet, foundObject) {
+	foundObject.found = true
+	foundObject.tweet = tweet;
+	database.update(collection, foundObject.id, foundObject);
+	var message = '🌟🌟🌟 @' + tweet.user.screen_name + ' you found a ' + foundObject.text + ". We're crossing it off the list http://mmmbrain.com";
   client.post('statuses/update', {status: message},  function(error, tweet, response){
   });
 }
@@ -32,17 +38,39 @@ function alreadyFound(user, winningUser) {
   client.post('statuses/update', {status: message},  function(error, tweet, response){
   });
 }
+
+function bestMatch(matches) {
+	var best = _.max(_.pairs(matches), function(pair){return pair[1]})
+	return {text: best[0], score: best[1]};
+}
 	
 
 function onImageAnalysis(err, matches, tweet) {
 	console.log(matches);
 	if (!err) {
-		Object.keys(matches).forEach(function(key){
-			if (matches[key] > 0.9) {
-				console.log("You've found " + key);
-				tweetFound(tweet.user, key);
+		
+		var best = bestMatch(matches);
+		console.log(best);
+		if (best.score > 0.9) {
+
+			var text = best.text;
+			console.log("Best match " + text);
+			var foundObject = database.findOne(collection, {text: text});
+			console.log('found object', foundObject);
+      if (!Object.keys(foundObject).length){
+				console.log("Invalid match");
+			} else if (!foundObject.found) {
+				console.log('found');
+			  tweetFound(tweet, foundObject);
+			} else {
+				console.log('already found');
+				alreadyFound(tweet.user, foundObject.tweet.user);
 			}
-		});
+
+		} else {
+		  console.log('no match');
+			noMatch(tweet.user, text);
+		}
 	}
 }
 
