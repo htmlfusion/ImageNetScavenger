@@ -1,5 +1,8 @@
-var Twitter = require('twitter');
-var request = require('request');
+var Twitter = require('twitter'),
+ request = require('request'),
+ dbPath = '/var/somewhere/database.json';
+
+var database = new Database(dbPath);
  
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
