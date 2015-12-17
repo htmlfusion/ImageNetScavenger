@@ -3,10 +3,9 @@ var _ = require('lodash'),
  Database = require('somewhere'),
  request = require('request'),
  collection = 'nouns',
- database = new Database('/var/somewhere/database.json');
+ dbPath = '/var/somewhere2/database.json',
+ database = new Database(dbPath);
  
-console.log(collection, database.find(collection, {}))
-
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -25,8 +24,8 @@ function tweetFound(tweet, foundObject) {
 
 function noMatch(user, closest) {
 	var message = '💣💣💣 @' + user.screen_name + ' no match!'
-	message += " Your closest match was " + closest 
-	message += "See whats left to find http://mmmbrain.com";
+	message += " Your closest match was " + closest + "."
+	message += " See whats left to find http://mmmbrain.com";
   client.post('statuses/update', {status: message},  function(error, tweet, response){
   });
 }
@@ -34,7 +33,7 @@ function noMatch(user, closest) {
 function alreadyFound(user, winningUser) {
 	var message = '🐌🐌🐌 @' + user.screen_name + ' @'+winningUser.screen_name
 	message += ' already found that!'
-	message += "See whats left to find http://mmmbrain.com";
+	message += " See whats left to find http://mmmbrain.com";
   client.post('statuses/update', {status: message},  function(error, tweet, response){
   });
 }
@@ -49,11 +48,11 @@ function onImageAnalysis(err, matches, tweet) {
 	console.log(matches);
 	if (!err) {
 		
-		var best = bestMatch(matches);
+		var best = bestMatch(matches),
+		 text = best.text;
 		console.log(best);
 		if (best.score > 0.9) {
 
-			var text = best.text;
 			console.log("Best match " + text);
 			var foundObject = database.findOne(collection, {text: text});
 			console.log('found object', foundObject);
@@ -94,7 +93,7 @@ client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stre
 	});
  
   stream.on('error', function(error) {
-    throw error;
+		console.log(error);
   });
 
 });

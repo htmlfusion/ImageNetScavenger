@@ -1,7 +1,7 @@
 twitter-bot:
   build: ./twitter-bot
   volumes:
-   - /var/somewhere
+   - /var/somewhere2
    - ./twitter-bot:/twitter-bot
   env_file: ./twitter-bot/keys.env
   links:
