@@ -14,3 +14,12 @@ imagenet:
   build: ./imagenet-service
   volumes:
    - ./imagenet-service:/imagenet
+checklist:
+  build: ./checklist
+  command: "gulp"
+  ports:
+   - 3000:3000
+  volumes_from:
+   - twitter-bot
+  volumes:
+   - ./checklist:/checklist

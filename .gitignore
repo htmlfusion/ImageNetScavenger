@@ -2,3 +2,9 @@
 keys.env
 node_modules
 npm-debug.log
+
+# Checklist
+public/components
+.sass-cache
+*.css
+

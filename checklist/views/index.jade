@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  ul
+    each val in nouns
+      if val.found
+        li.found-item= val.text
+      else
+        li= val.text

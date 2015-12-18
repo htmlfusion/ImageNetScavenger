@@ -51,7 +51,7 @@ function onImageAnalysis(err, matches, tweet) {
 		var best = bestMatch(matches),
 		 text = best.text;
 		console.log(best);
-		if (best.score > 0.9) {
+		if (best.score > 0.85) {
 
 			console.log("Best match " + text);
 			var foundObject = database.findOne(collection, {text: text});
@@ -75,6 +75,7 @@ function onImageAnalysis(err, matches, tweet) {
 
 client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stream) {
 
+	console.log('called');
   stream.on('data', function(tweet) {
 
 		if(tweet.entities.media) {
@@ -93,7 +94,7 @@ client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stre
 	});
  
   stream.on('error', function(error) {
-		console.log(error);
+		console.log('error', error);
   });
 
 });
