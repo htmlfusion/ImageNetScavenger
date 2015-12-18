@@ -1,10 +1,14 @@
 extends layout
 
 block content
-  h1= title
-  ul
-    each val in nouns
-      if val.found
-        li.found-item= val.text
-      else
-        li= val.text
+  h1 Scavanger Hunt
+  include twitter.html
+  div.center
+    ul
+      each val in nouns
+        if val.found
+          li
+            span.found-item= val.text + "by"
+            a(href='https://twitter.com/'+ val.tweet.user.screen_name target="blank")= " @"+val.tweet.user.screen_name
+        else
+          li= val.text

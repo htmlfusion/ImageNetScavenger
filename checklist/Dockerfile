@@ -4,6 +4,7 @@ WORKDIR /checklist
 RUN apt-get update && apt-get install -y ruby && gem install sass
 RUN npm install --global gulp
 RUN npm install
+RUN bower install
 RUN gulp sass
 RUN mkdir /var/database
 EXPOSE 3000

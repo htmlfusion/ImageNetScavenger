@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  padding: 20px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -7,6 +7,23 @@ a {
   color: #00B7FF;
 }
 
+h1 {
+  text-align: center;
+}
+
+.center {
+  margin: 0 auto;
+  max-width: 360px;
+}
+
 .found-item {
   text-decoration: line-through;
+}
+
+.share-content {
+  text-align: center;
+}
+
+li {
+ font-size: 16px;
 }
