@@ -9,7 +9,10 @@ var Database = require('somewhere'),
 
 router.get('/', function(req, res) {
   var database = new Database(dbPath);
-  res.render('index', {nouns: database.find(collection)});
+  res.render('index', {
+		found: database.find(collection, {found: true}),
+		unfound: database.find(collection, {found: false})
+	});
 });
 
 module.exports = router;
