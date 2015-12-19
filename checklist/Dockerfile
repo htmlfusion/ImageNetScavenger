@@ -2,7 +2,7 @@ FROM node:4.2.3-wheezy
 ADD . /checklist
 WORKDIR /checklist
 RUN apt-get update && apt-get install -y ruby && gem install sass
-RUN npm install --global gulp
+RUN npm install --global gulp && npm install -g bower
 RUN npm install
 RUN bower install
 RUN gulp sass
