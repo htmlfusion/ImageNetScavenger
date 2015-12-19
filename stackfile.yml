@@ -1,0 +1,22 @@
+checklist:
+  image: 'freakthemighty/scavenger-checklist:latest'
+  volumes_from:
+    - twitter-bot
+imagenet:
+  image: 'freakthemighty/scavangerimagenet:latest'
+  target_num_containers: 2
+imagenet-proxy:
+  image: 'tutum/haproxy:latest'
+  links:
+    - imagenet
+twitter-bot:
+  image: 'freakthemighty/scavenger-twitter-bot:latest'
+  environment:
+    - TWITTER_ACCESS_TOKEN_KEY=?
+    - TWITTER_BOT=?
+    - TWITTER_CONSUMER_KEY=?
+    - TWITTER_CONSUMER_SECRET=?
+    - TWITTER_TOKEN_SECRET=?
+  links:
+    - 'imagenet-proxy:imagenet'
+
