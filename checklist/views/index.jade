@@ -1,8 +1,18 @@
 extends layout
 
 block content
-  h1 Scavanger Hunt
+  h1.align-center Scavanger Hunt
   include twitter.html
+  h2.align-center How to play?
+  div.center
+    ol
+      li Pick an to find item from the list.
+      li 
+        span Take a picture of that item and Tweet it to 
+        a(href='https://twitter.com/testjesse33' target="blank")= "@htmlfusion"
+        span , we'll reply and cross it off the list if you're the first to find it.
+      li Find as many items as you can!
+  h2.align-center Items
   div.center
     ul
       each val in found
