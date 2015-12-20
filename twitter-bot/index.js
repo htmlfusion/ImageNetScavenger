@@ -19,6 +19,7 @@ function tweetFound(tweet, foundObject) {
 	database.update(collection, foundObject.id, foundObject);
 	var message = '🌟🌟🌟 @' + tweet.user.screen_name + ' you found a ' + foundObject.text + ". We're crossing it off the list http://mmmbrain.com";
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
+		console.log('response: tweet found error', error);
 	});
 }
 
@@ -27,6 +28,7 @@ function noMatch(user, closest) {
 	message += " Your closest match was " + closest + "."
 	message += " See whats left to find http://mmmbrain.com";
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
+		console.log('response: no match error', error);
 	});
 }
 
@@ -35,6 +37,7 @@ function onError(user) {
 	message += ' Try a new photo, or just try again.'
 	message += " See whats left to find http://mmmbrain.com";
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
+		console.log('response: onError message', error);
 	});
 }
 
@@ -43,6 +46,7 @@ function alreadyFound(user, winningUser) {
 	message += ' already found that!'
 	message += " See whats left to find http://mmmbrain.com";
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
+		console.log('response: already found error', error);
 	});
 }
 
@@ -58,13 +62,12 @@ function onImageAnalysis(err, matches, tweet) {
 	if (!err) {
 		
 		var best = bestMatch(matches),
-		 text = best.text;
+		text = best.text;
 		console.log(best);
 		if (best.score > 0.85) {
 
 			console.log("Best match " + text);
 			var foundObject = database.findOne(collection, {text: text});
-			console.log('found object', foundObject);
 			if (!Object.keys(foundObject).length){
 				console.log("Invalid match");
 			} else if (!foundObject.found) {
