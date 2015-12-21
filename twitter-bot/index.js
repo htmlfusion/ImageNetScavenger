@@ -90,7 +90,7 @@ function onImageAnalysis(err, matches, tweet) {
 
 client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stream) {
 
-	console.log('called');
+	console.log('on stream');
 	stream.on('data', function(tweet) {
 
 		if(tweet.entities.media) {
