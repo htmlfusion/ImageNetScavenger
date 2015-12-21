@@ -2,13 +2,29 @@ checklist:
   image: 'freakthemighty/scavenger-checklist:latest'
   volumes_from:
     - twitter-bot
+checklist-proxy:
+  image: 'tutum/haproxy:latest'
+  environment:
+    - TCP_PORTS=3000
+  expose:
+    - '443'
+    - '1936'
+  links:
+    - checklist
+  ports:
+    - '80:80'
+  roles:
+    - global
 imagenet:
   image: 'freakthemighty/scavangerimagenet:latest'
+  restart: on-failure
   target_num_containers: 2
 imagenet-proxy:
   image: 'tutum/haproxy:latest'
   links:
     - imagenet
+  roles:
+    - global
 twitter-bot:
   image: 'freakthemighty/scavenger-twitter-bot:latest'
   environment:
@@ -19,4 +35,7 @@ twitter-bot:
     - TWITTER_TOKEN_SECRET=?
   links:
     - 'imagenet-proxy:imagenet'
+  sequential_deployment: true
+  volumes:
+    - /var/somewhere2
 
