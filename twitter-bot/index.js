@@ -4,7 +4,8 @@ var _ = require('lodash'),
  request = require('request'),
  collection = 'nouns',
  dbPath = '/var/somewhere2/database.json',
- database = new Database(dbPath);
+ database = new Database(dbPath),
+ checklist = 'http://goo.gl/juWslz';
  
 var client = new Twitter({
 	consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -17,7 +18,9 @@ function tweetFound(tweet, foundObject) {
 	foundObject.found = true
 	foundObject.tweet = tweet;
 	database.update(collection, foundObject.id, foundObject);
-	var message = '🌟🌟🌟 @' + tweet.user.screen_name + ' you found a ' + foundObject.text + ". We're crossing it off the list http://mmmbrain.com";
+	var message = '🌟🌟🌟 @' + tweet.user.screen_name + ' you found a ' + 
+		foundObject.text + ". We're crossing it off the list " + checklist;
+
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
 		console.log('response: tweet found error', error);
 	});
@@ -25,8 +28,8 @@ function tweetFound(tweet, foundObject) {
 
 function noMatch(user, closest) {
 	var message = '💣💣💣 @' + user.screen_name + ' no match!'
-	message += " Your closest match was " + closest + "."
-	message += " See whats left to find http://mmmbrain.com";
+	message += " We think it is a " + closest + ", but we're not sure."
+	message += " See whats left to find " + checklist;
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
 		console.log('response: no match error', error);
 	});
@@ -35,7 +38,7 @@ function noMatch(user, closest) {
 function onError(user) {
 	var message = '@' + user.screen_name + ' oh noes, something went wrong.'
 	message += ' Try a new photo, or just try again.'
-	message += " See whats left to find http://mmmbrain.com";
+	message += " See whats left to find " + checklist;
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
 		console.log('response: onError message', error);
 	});
@@ -44,7 +47,7 @@ function onError(user) {
 function alreadyFound(user, winningUser) {
 	var message = '🐌🐌🐌 @' + user.screen_name + ' @'+winningUser.screen_name
 	message += ' already found that!'
-	message += " See whats left to find http://mmmbrain.com";
+	message += " See whats left to find " + checklist;
 	client.post('statuses/update', {status: message},  function(error, tweet, response){
 		console.log('response: already found error', error);
 	});
@@ -116,6 +119,7 @@ client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stre
  
 	stream.on('error', function(error) {
 		console.log('error', error);
+		process.exit(1);
 	});
 
 });
