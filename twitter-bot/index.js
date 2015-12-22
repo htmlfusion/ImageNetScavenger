@@ -75,13 +75,12 @@ function bestMatch(matches) {
 
 function onImageAnalysis(err, matches, tweet) {
 	console.log(matches);
-	console.log(tweet);
 	if (!err) {
 		
 		var best = bestMatch(matches),
 		text = best.text;
 		console.log(best);
-		if (best.score > 0.85) {
+		if (best.score > 0.65) {
 
 			console.log("Best match " + text);
 			var foundObject = database.findOne(collection, {text: text});
