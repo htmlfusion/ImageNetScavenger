@@ -20,6 +20,6 @@ block content
       each val in found
         li
           span.found-item= val.text + " found by "
-          a(href='https://twitter.com/'+ val.tweet.user.screen_name target="blank")= " @"+val.tweet.user.screen_name
+          a(href='https://twitter.com/'+ val.tweet.user.screen_name target="blank")= "@"+val.tweet.user.screen_name
       each val in unfound
           li= val.text
