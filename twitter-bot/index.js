@@ -5,8 +5,9 @@ var _ = require('lodash'),
  collection = 'nouns',
  dbPath = '/var/somewhere2/database.json',
  database = new Database(dbPath),
- checklist = 'http://goo.gl/juWslz';
- 
+ checklist = 'http://goo.gl/juWslz'
+ hashtag = "#imagenet";
+
 var client = new Twitter({
 	consumer_key: process.env.TWITTER_CONSUMER_KEY,
 	consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -19,36 +20,48 @@ function tweetFound(tweet, foundObject) {
 	foundObject.tweet = tweet;
 	database.update(collection, foundObject.id, foundObject);
 	var message = '🌟🌟🌟 @' + tweet.user.screen_name + ' you found a ' + 
-		foundObject.text + ". We're crossing it off the list " + checklist;
+		foundObject.text + ". We're crossing it off the list " + checklist +
+		' ' + hashtag;
 
-	client.post('statuses/update', {status: message},  function(error, tweet, response){
+	client.post('statuses/update', {
+		status: message, in_reply_to_status_id: tweet.id_str
+	},  function(error, tweet, response){
 		console.log('response: tweet found error', error);
 	});
 }
 
-function noMatch(user, closest) {
-	var message = '💣💣💣 @' + user.screen_name + ' no match!'
-	message += " We think it is a " + closest + ", but we're not sure."
-	message += " See whats left to find " + checklist;
-	client.post('statuses/update', {status: message},  function(error, tweet, response){
+function noMatch(tweet, closest) {
+	var message = '💣💣💣 @' + tweet.user.screen_name + ' no match!'
+	message += " Maybe its a " + closest + ", but not sure."
+	message += " " + checklist;
+	message += ' ' + hashtag;
+	client.post('statuses/update', {
+		status: message, in_reply_to_status_id: tweet.id_str
+	},  function(error, tweet, response){
 		console.log('response: no match error', error);
 	});
 }
 
-function onError(user) {
-	var message = '@' + user.screen_name + ' oh noes, something went wrong.'
+function onError(tweet) {
+	var message = '@' + tweet.user.screen_name + ' oh noes, something went wrong.'
 	message += ' Try a new photo, or just try again.'
 	message += " See whats left to find " + checklist;
-	client.post('statuses/update', {status: message},  function(error, tweet, response){
+	message += ' ' + hashtag;
+	client.post('statuses/update', {
+		status: message, in_reply_to_status_id: tweet.id_str
+	},  function(error, tweet, response){
 		console.log('response: onError message', error);
 	});
 }
 
-function alreadyFound(user, winningUser) {
-	var message = '🐌🐌🐌 @' + user.screen_name + ' @'+winningUser.screen_name
+function alreadyFound(tweet, winningUser) {
+	var message = '🐌🐌🐌 @' + tweet.user.screen_name + ' @'+winningUser.screen_name
 	message += ' already found that!'
 	message += " See whats left to find " + checklist;
-	client.post('statuses/update', {status: message},  function(error, tweet, response){
+	message += ' ' + hashtag;
+	client.post('statuses/update', {
+		status: message, in_reply_to_status_id: tweet.id_str
+	},  function(error, tweet, response){
 		console.log('response: already found error', error);
 	});
 }
@@ -62,6 +75,7 @@ function bestMatch(matches) {
 
 function onImageAnalysis(err, matches, tweet) {
 	console.log(matches);
+	console.log(tweet);
 	if (!err) {
 		
 		var best = bestMatch(matches),
@@ -78,12 +92,12 @@ function onImageAnalysis(err, matches, tweet) {
 				tweetFound(tweet, foundObject);
 			} else {
 				console.log('already found');
-				alreadyFound(tweet.user, foundObject.tweet.user);
+				alreadyFound(tweet, foundObject.tweet.user);
 			}
 
 		} else {
 			console.log('no match');
-			noMatch(tweet.user, text);
+			noMatch(tweet, text);
 		}
 	}
 }
@@ -104,12 +118,12 @@ client.stream('statuses/filter', {track: process.env.TWITTER_BOT}, function(stre
 						 try {
 							 var data = JSON.parse(body)
 							 if (data.error) {
-								 onError(tweet.user);
+								 onError(tweet);
 							 } else {
 								 onImageAnalysis(err, data, tweet);
 							 }
 						 } catch(e) {
-							 onError(tweet.user);
+							 onError(tweet);
 						 }
 				 }
 			 );
